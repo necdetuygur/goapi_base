@@ -1,10 +1,6 @@
 package main
 
-import (
-	"fmt"
-
-	socketio "github.com/googollee/go-socket.io"
-)
+import socketio "github.com/googollee/go-socket.io"
 
 type SocketQueue []socketio.Conn
 
@@ -20,7 +16,6 @@ func SocketServer() *socketio.Server {
 	server.OnError("/", func(s socketio.Conn, e error) {})
 	server.OnDisconnect("/", func(s socketio.Conn, reason string) {})
 	server.OnEvent("/", "Dream", func(s socketio.Conn, msg string) {
-		fmt.Println(msg)
 		for _, socket := range Sockets {
 			socket.Emit("Dream", msg)
 		}
