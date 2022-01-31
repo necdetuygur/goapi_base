@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"goapi_base/config"
 	"goapi_base/model"
 	"goapi_base/router"
@@ -9,31 +8,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-
-	socketio "github.com/googollee/go-socket.io"
 )
-
-type SocketQueue []socketio.Conn
-
-var Sockets SocketQueue
-
-func SocketServer() *socketio.Server {
-	var server = socketio.NewServer(nil)
-	server.OnConnect("/", func(s socketio.Conn) error {
-		s.SetContext("")
-		Sockets = append(Sockets, s)
-		return nil
-	})
-	server.OnError("/", func(s socketio.Conn, e error) {})
-	server.OnDisconnect("/", func(s socketio.Conn, reason string) {})
-	server.OnEvent("/", "Dream", func(s socketio.Conn, msg string) {
-		fmt.Println(msg)
-		for _, socket := range Sockets {
-			socket.Emit("Dream", msg)
-		}
-	})
-	return server
-}
 
 func main() {
 	// VERİ TABANINDA TABLO YOKSA OLUŞTUR METODLARI
@@ -49,7 +24,7 @@ func main() {
 	// WEB FRAMEWORK AUTH
 	ec.POST("/Login", Login)
 
-	///
+	// Socket.IO
 	var server = SocketServer()
 	go server.Serve()
 	defer server.Close()
@@ -57,7 +32,6 @@ func main() {
 		server.ServeHTTP(c.Response(), c.Request())
 		return nil
 	})
-	///
 
 	e := ec.Group("")
 	e.Use(middleware.JWT([]byte(config.AUTH_JWT_TOKEN)))
