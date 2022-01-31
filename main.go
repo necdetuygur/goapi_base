@@ -24,7 +24,7 @@ func main() {
 	// WEB FRAMEWORK AUTH
 	ec.POST("/Login", Login)
 
-	// Socket.IO
+	// SOCKET.IO
 	var server = SocketServer()
 	go server.Serve()
 	defer server.Close()
