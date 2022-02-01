@@ -25,14 +25,15 @@ func main() {
 	ec.POST("/Login", Login)
 
 	// SOCKET.IO
-	var server = SocketServer()
-	go server.Serve()
-	defer server.Close()
+	var socketServer = SocketServer()
+	go socketServer.Serve()
+	defer socketServer.Close()
 	ec.Any("/socket.io/", func(c echo.Context) error {
-		server.ServeHTTP(c.Response(), c.Request())
+		socketServer.ServeHTTP(c.Response(), c.Request())
 		return nil
 	})
 
+	// AUTH_JWT_TOKEN
 	e := ec.Group("")
 	e.Use(middleware.JWT([]byte(config.AUTH_JWT_TOKEN)))
 
